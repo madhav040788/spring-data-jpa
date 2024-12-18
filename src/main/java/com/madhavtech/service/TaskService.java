@@ -8,10 +8,14 @@ import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.lang.reflect.Field;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -99,10 +103,35 @@ public class TaskService {
         return taskRepository.findByAssigneeIgnoreCaseContaining(assignee);
     }
 
-    // SORTING
+    // SORTING you can fetch all the records and then sort them using Java's Comparator.
     public List<Task> getTasksSortingOnName(@PathVariable String fieldName){
-        return taskRepository.findAll(Sort.by(Sort.Direction.ASC,fieldName));
+        List<Task> tasks = taskRepository.findAll();
+        tasks.sort(Comparator.comparing(task -> getFieldValues(task,fieldName).toString().toLowerCase()));
+        return tasks;
     }
 
+    private Object getFieldValues(Task task, String fieldName)  {
+        try {
+            Field field = Task.class.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field.get(task);
+        }
+        catch (NoSuchFieldException | IllegalAccessException e){
+            throw new RuntimeException("Invalid field Name : - "+fieldName, e);
+        }
+    }
+
+    //PAGINATION
+    public Page<Task> getTaskPagingRange(int offSet, int limit){
+        return taskRepository.findAll(PageRequest.of(offSet, limit));
+    }
+
+    // PAGINATION AND SORTING
+    public Page<Task> getTaskPaginationAndSorting(String fieldName,int offSet,int limit){
+        logger.info("TaskService :: getTaskPaginationAndSorting() request to db  {}",fieldName);
+        return taskRepository.findAll(PageRequest
+                .of(offSet,limit)
+                .withSort(Sort.by(fieldName)));
+    }
 
 }

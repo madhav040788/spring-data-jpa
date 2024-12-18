@@ -5,6 +5,7 @@ import com.madhavtech.service.TaskService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -101,6 +102,18 @@ public class TaskController {
         return new ResponseEntity<>(resSorting,HttpStatus.OK);
     }
 
+    @GetMapping("/pagination/{offSet}/{limit}")
+    public ResponseEntity<Page<Task>> getPaginationByRange(@PathVariable int offSet,@PathVariable int limit){
+        Page<Task> responsePagination = taskService.getTaskPagingRange(offSet, limit);
+        return  new ResponseEntity<>(responsePagination,HttpStatus.OK);
+    }
 
+    @GetMapping("/sortWithPage/{fieldName}/{offSet}/{limit}")
+    public ResponseEntity<Page<Task>> getTaskByPaginationAndSorting(@PathVariable String fieldName,@PathVariable int offSet, @PathVariable int limit){
+       logger.info("TaskController :: getTaskByPaginationAdnSorting() request to db {},{},{}",fieldName,offSet,limit);
+        Page<Task> responsePgtnndSortng = taskService.getTaskPaginationAndSorting(fieldName, offSet, limit);
+       logger.debug("TaskController :: getTaskByPaginationAdnSorting() Response from db {}",responsePgtnndSortng);
+        return new ResponseEntity<>(responsePgtnndSortng,HttpStatus.OK);
+    }
 
 }
