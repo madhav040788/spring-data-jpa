@@ -8,7 +8,9 @@ import lombok.ToString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 import java.util.UUID;
@@ -62,4 +64,45 @@ public class TaskService {
 //        return responseByAssigneeAndpri;
         return reposnseTwoElement;
     }
+
+    public List<Task> getTasksByStoreypointAndPriority(int storyPoint,String priority){
+        List<Task> responseFromDb = taskRepository.findByStoryPointAndPriority(storyPoint,priority);
+        return responseFromDb;
+    }
+
+    // OPERATORS ==> IN,LIKE,MIN,MAX,BETWEEN,IGNORE CASE
+
+    public List<Task> getTaskByMultipleStoryPoints(int storyPoint){
+        return taskRepository.findByStoryPointIn(storyPoint);
+    }
+    //Between - Min and Max
+    public List<Task> getTaskBetweenPriority(String minPriority,String maxPriority){
+         return taskRepository.findByPriorityBetween(minPriority,maxPriority);
+    }
+
+    // lessthan
+    public List<Task> getTasksLessThanStoryPoint(int storyPoint){
+        return taskRepository.findByStoryPointLessThan(storyPoint);
+    }
+
+    //greater than
+    public List<Task> getTaskGraterThanStoryPoint(int storyPoint){
+        return taskRepository.findByStoryPointGreaterThan(storyPoint);
+    }
+
+    //LIKE
+    public List<Task> getTasksLikeAssigneeName(String assignee){
+        return taskRepository.findByAssigneeLike(assignee);
+    }
+
+    public List<Task> getTasksIgnoreCaseAssignee(String assignee){
+        return taskRepository.findByAssigneeIgnoreCaseContaining(assignee);
+    }
+
+    // SORTING
+    public List<Task> getTasksSortingOnName(@PathVariable String fieldName){
+        return taskRepository.findAll(Sort.by(Sort.Direction.ASC,fieldName));
+    }
+
+
 }

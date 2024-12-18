@@ -53,4 +53,54 @@ public class TaskController {
      public List<Task> getTaskByAssigneeAndPriority(@PathVariable String assignee,@PathVariable String priority){
         return taskService.getTaskByAssigneeAndPriorityTwo(assignee,priority);
      }
+     @GetMapping("/sp/{storyPoint}/priority/{priority}")
+     public ResponseEntity<List<Task>> fetchTaskByTwoFeilds(@PathVariable int storyPoint, @PathVariable String priority){
+        List<Task> responseBySpAndPrio = taskService.getTasksByStoreypointAndPriority(storyPoint, priority);
+        return new ResponseEntity<>(responseBySpAndPrio,HttpStatus.OK);
+     }
+
+     @GetMapping("/in/{storyPoint}")
+     public ResponseEntity<List<Task>>  fetchTaskByInStoryPoints(@PathVariable int storyPoint){
+        List<Task> responseByInSp = taskService.getTaskByMultipleStoryPoints(storyPoint);
+        return new ResponseEntity<>(responseByInSp,HttpStatus.OK);
+     }
+        // BETWEEN MIN&MAX
+     @GetMapping("/between/{minPriority}/{maxPriority}")
+    public ResponseEntity<List<Task>> fetchAllTasksBetweenPriority(@PathVariable String minPriority,@PathVariable String maxPriority){
+        List<Task> resBetweenMinMax = taskService.getTaskBetweenPriority(minPriority, maxPriority);
+        return new ResponseEntity<>(resBetweenMinMax,HttpStatus.OK);
+     }
+     @GetMapping("/less/{storyPoint}")
+     public ResponseEntity<List<Task>> fetchAllTaskLessThanSp(@PathVariable int storyPoint){
+        List<Task> resLessThan =taskService.getTasksLessThanStoryPoint(storyPoint);
+        return new ResponseEntity<>(resLessThan,HttpStatus.OK);
+     }
+
+    @GetMapping("/greater/{storyPoint}")
+    public ResponseEntity<List<Task>> fetchAllTaskGreaterThanSp(@PathVariable int storyPoint){
+        List<Task> resGreaterThan =taskService.getTaskGraterThanStoryPoint(storyPoint);
+        return new ResponseEntity<>(resGreaterThan,HttpStatus.OK);
+    }
+
+    @GetMapping("/like/{assignee}")
+    public ResponseEntity<List<Task>> fetchAllTaskAssigneeNames(@PathVariable String assignee){
+        List<Task> resAssignee =taskService.getTasksLikeAssigneeName(assignee);
+        return new ResponseEntity<>(resAssignee,HttpStatus.OK);
+    }
+
+    @GetMapping("/ignoreCase/{assignee}")
+    public ResponseEntity<List<Task>> fetchAllTaskIgnoreCaseAssigneeNames(@PathVariable String assignee){
+        List<Task> resAssignee =taskService.getTasksIgnoreCaseAssignee(assignee);
+        return new ResponseEntity<>(resAssignee,HttpStatus.OK);
+    }
+
+    //SORTING
+    @GetMapping("/sort/{fieldName}")
+    public ResponseEntity<List<Task>> fetchAllTaskSortingAssigneeNames(@PathVariable String fieldName){
+        List<Task> resSorting =taskService.getTasksSortingOnName(fieldName);
+        return new ResponseEntity<>(resSorting,HttpStatus.OK);
+    }
+
+
+
 }
